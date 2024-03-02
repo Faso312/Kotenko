@@ -22,22 +22,24 @@ def check(user_id: str): #проверка на наличие id пользов
         return check(user_id)
 
 def get_users():
-    try:
-        return sh1.get_all_values()[1:]
+    try: return sh1.get_all_values()[1:]
     except gspread.exceptions.APIError:
         on_hold(5)
         return get_users()
-print(get_users())
+
 def get_dates():
-    try:
-        return sh2.col_values(1)[1:]
+    try: return sh2.col_values(1)[1:]
     except gspread.exceptions.APIError:
         on_hold(5)
         return get_dates()
 
-def check_for_day(list_: list, time1: int, time2: int):
+def check_for_day(list_: list):
     try:
-        return [True for item in list_ if dt.strptime(item, "%d.%m.%Y").date()==dt.now().date() and dt.today().hour == time1 or time2][0]
+        for item in list_: 
+            if dt.strptime(item, "%d.%m.%Y").date()==dt.now().date():
+                if dt.today().hour == 18: return True
+                elif dt.today().hour == 20: return True
+                else: return False
     except KeyboardInterrupt: print(f'Работа приостановлена.....')
     except Exception as e: print(f'ошибка вида: {e}')
 

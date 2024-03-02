@@ -4,7 +4,6 @@ from handlers import except_, run_
 from handlers.db import *
 
 
-
 logging.basicConfig(level=logging.INFO)
 
 # Настройка бота
@@ -14,12 +13,12 @@ dp = Dispatcher()
 async def sending(): #функция цикличной рассылки оповещений
     try:
         while True:
-            if check_for_day(get_dates(),11,12) is True:
+            if check_for_day(get_dates()) is True:
                 list_=get_users() #присваевыем значение функции локальному списку
-                for item in list_: await bot.send_message(chat_id=int(item[0]),text=f'котенко')
-            await asyncio.sleep(3500) #проверка каждые __ секунд --- 2400 - 40 мин
-    except KeyboardInterrupt: pass
-
+                for item in list_: 
+                    if item: await bot.send_message(chat_id=int(item[0]), text=f'-')
+            await asyncio.sleep(3500) 
+    except KeyboardInterrupt as e: print(f'Ошибка: {e}')
 
 async def main(): #основная функция системы
     dp.include_router(run_.router)
