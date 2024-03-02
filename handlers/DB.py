@@ -1,61 +1,56 @@
-import gspread
-import time
+import gspread, time
+import numpy as np
+from datetime import datetime as dt
 
 sa = gspread.service_account('_Key_.json') #подключение в  json файлу библиотеки
 sh = sa.open("Vote_data")  #открытие таблицы с таким-то названием
-token="6600311339:AAEtH4iXyC0x005c-lc_EDYKyEarRl9Cdms"
+
+user_int=['Регистрация прошла успешно📅!','Вы уже зарегистрированы','Отлично, начнем регистрацию⚡\nВведите свой номер в формате: 89271234567','Ваш номер не найден в базе данных. Попробуйте еще раз или обратитесь к администратору']
+token="7001582759:AAHQ3IcSCZ96WeEvL-HRpbR2DiJC4wxhBmk"
+sh1=sh.get_worksheet(0)
+sh2=sh.get_worksheet(1)
+
 
 def on_hold(sec: int): time.sleep(sec) # функция задержки 
 
-def get_candidats():
+def check(user_id: str): #проверка на наличие id пользователя в системе
     try:
-        sheet3 = sh.get_worksheet(2)  # выбирам третий по порядку лист
-        candidats_ATP = sheet3.row_values(1)  # выбирам ПЕРВУЮ строку
-        candidats_IVT = sheet3.row_values(2)  # выбирам ВТОРАЯ строку
-        candidats_IS = sheet3.row_values(3)  # выбирам ТРЕТЬЯ строку
-        candidats_IST = sheet3.row_values(4)  # выбирам ЧЕТВЕРТАЯ строку
-        candidats_Pr = sheet3.row_values(5)  # выбирам ПЯТАЯ строку
-        return [candidats_ATP,candidats_IVT,candidats_IS,candidats_IST,candidats_Pr] #вывод общего списка кандидатов
+        if sh1.find(str(user_id)) is None: return True
+        else: return False
     except gspread.exceptions.APIError:
         on_hold(5)
-        return get_candidats()
-print(sh.get_worksheet(2).get_values())
-print(get_candidats())
+        return check(user_id)
 
-def pass_user_data(user_id: str,department_id: int,myList: []): #принимаем id пользователя и список ответов
+def get_users():
     try:
-        department_worksheet=sh.get_worksheet(department_id+3) #определение рабочей страницы в таблице
-        last_row = len(department_worksheet.get_all_values()) + 1 #получение последнего значения заполненной строки +1 
-        if department_worksheet.find(user_id) is None: #проверям на наличие id в таблице
-            myList.insert(0,user_id) # Добавляем id на первое место в списке
-            for col in range(1, len(myList)+1,1): #заполнение через for(1, длинна списка ответов, шаг 1)
-                department_worksheet.update_cell(last_row, col, myList[col-1]) #определяем место ввода(поселдняя свободная, столбец, значение)
-        else:return False 
+        return sh1.get_all_values()[1:]
     except gspread.exceptions.APIError:
         on_hold(5)
-        return pass_user_data(user_id,department_id,myList)
-
-def get_vote_results(department_id: int) -> list: 
+        return get_users()
+print(get_users())
+def get_dates():
     try:
-        vote_list=[] #создаем локальный список голосов
-        department_worksheet=sh.get_worksheet(department_id+3) #определение рабочей страницы в таблице   
-        for itr in range(2,26,1): #перебор столбцов
-            votes=department_worksheet.col_values(itr) #определение 
-            if votes: #bool  проверка на пустые столбцы
-                candidate=votes[0] #вопрос(имя кандидата)
-                votes_for=votes.count('за') #голоса за 
-                vote_list.extend([candidate,votes_for]) #подставление значений в список
-        max_Value=max([vote_list[itr] for itr in range(1, len(vote_list),2)]) #получаем маскимальное значения
-        winner_value=vote_list[int(vote_list.index(max_Value))-1] #получаем имя победителя
-        return [winner_value,max_Value] #возвращаем список(имя-за)
+        return sh2.col_values(1)[1:]
     except gspread.exceptions.APIError:
         on_hold(5)
-        return get_vote_results(department_id)
+        return get_dates()
 
-def clear_sheets(department_id: int): #очищает клетки в диапозоне
-    try: 
-        department_worksheet=sh.get_worksheet(department_id+3) #определение рабочей страницы в таблице
-        department_worksheet.batch_clear(["A3:Z100"]) #определяем область очистки
-    except gspread.exceptions.APIError: 
-        on_hold(5)
-        return clear_sheets(department_id)
+def check_for_day(list_: list, time1: int, time2: int):
+    try:
+        return [True for item in list_ if dt.strptime(item, "%d.%m.%Y").date()==dt.now().date() and dt.today().hour == time1 or time2][0]
+    except KeyboardInterrupt: print(f'Работа приостановлена.....')
+    except Exception as e: print(f'ошибка вида: {e}')
+
+
+
+def register_user(user_data: list): #регистрация пользователя
+    try:
+        last_row = len(sh1.get_all_values()) + 1 #получение последнего значения заполненной строки +1 
+        sh1.update_cell(last_row, 1, user_data[0]) #определяем место ввода(последняя свободная, столбец, значение)
+    except gspread.exceptions.APIError:
+        on_hold(30)
+        return register_user(user_data)
+
+
+
+
