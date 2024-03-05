@@ -24,7 +24,7 @@ async def cmd_start_menu(message: Message, state: FSMContext):
     
 
 @router.message(User_data.ID, F.text.in_(['Регистрация']))
-async def setting_departmant(message: Message, state: FSMContext):
+async def register_user(message: Message, state: FSMContext):
     try:
         if check(message.from_user.id) is True: 
             register_user([str(message.from_user.id)])
