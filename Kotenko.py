@@ -33,7 +33,7 @@ try: #последователльная обработка функциий
             tasks_list = [event_loop.create_task(sending()), event_loop.create_task(main())] #список поручений
             wait_tasks = asyncio.wait(tasks_list) #ожидание выпонения
             event_loop.run_until_complete(wait_tasks) #асинхронное выпонение
-except KeyboardInterrupt as e: 
+except KeyboardInterrupt: 
     event_loop.close() #закрытие
     print(f'Работа приостановлена......') #прерывание через Ctrl+C
 except Exception as e: print(f'Ошибка вида: {e}.....') #общая обработа ошибок
