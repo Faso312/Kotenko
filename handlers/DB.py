@@ -37,8 +37,8 @@ def check_for_day(list_: list) -> bool:
     try:
         for item in list_: 
             if dt.strptime(item, "%d.%m.%Y").date()==dt.now().date():
-                if dt.today().hour == 18: return True
-                elif dt.today().hour == 20: return True
+                if dt.today().hour+4 == 18: return True
+                elif dt.today().hour+4== 20: return True
                 else: return False
     except KeyboardInterrupt: print(f'Работа приостановлена.....')
     except Exception as e: print(f'ошибка вида: {e}')
