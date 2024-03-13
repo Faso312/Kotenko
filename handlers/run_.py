@@ -4,7 +4,7 @@ from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardRemove
 from keyboards.dinemic_kb import make_row_keyboard as mrk
 from aiogram.fsm.state import StatesGroup, State
-from .db import *
+from .DB import *
 
 
 greeting = ["Привет! Если у тебя проблемы с памятью, тебе ко мне🧠\nЧтобы получать уведолмения, нажми на кнопку 'Регистрация' ниже."]
