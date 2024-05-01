@@ -1,5 +1,4 @@
 import gspread, time
-import numpy as np
 from datetime import datetime as dt
 
 sa = gspread.service_account('_Key_.json') #подключение в  json файлу библиотеки
@@ -13,7 +12,7 @@ sh2=sh.get_worksheet(1)
 
 def on_hold(sec: int): time.sleep(sec) # функция задержки 
 
-def check(user_id: str): #проверка на наличие id пользователя в системе
+def check(user_id: str)->bool: #проверка на наличие id пользователя в системе
     try:
         if sh1.find(str(user_id)) is None: return True
         else: return False
@@ -21,24 +20,24 @@ def check(user_id: str): #проверка на наличие id пользов
         on_hold(5)
         return check(user_id)
 
-def get_users():
+def get_users()->list:
     try: return sh1.get_all_values()[1:]
     except gspread.exceptions.APIError:
         on_hold(5)
         return get_users()
 
-def get_dates():
+def get_dates()-> list:
     try: return sh2.col_values(1)[1:]
     except gspread.exceptions.APIError:
         on_hold(5)
         return get_dates()
 
-def check_for_day(list_: list):
+def check_for_day(list_: list)-> bool:
     try:
         for item in list_: 
             if dt.strptime(item, "%d.%m.%Y").date()==dt.now().date():
                 if dt.today().hour == 18: return True
-                elif dt.today().hour == 20: return True
+                elif dt.today().hour == 21: return True
                 else: return False
     except KeyboardInterrupt: print(f'Работа приостановлена.....')
     except Exception as e: print(f'ошибка вида: {e}')
@@ -46,13 +45,9 @@ def check_for_day(list_: list):
 
 
 def register_user(user_data: list): #регистрация пользователя
-    try:
-        last_row = len(sh1.get_all_values()) + 1 #получение последнего значения заполненной строки +1 
-        sh1.update_cell(last_row, 1, user_data[0]) #определяем место ввода(последняя свободная, столбец, значение)
+    try: sh1.update_cell(len(sh1.get_values())+1, 1, user_data[0]) #определяем место ввода(последняя свободная, столбец, значение)
     except gspread.exceptions.APIError:
         on_hold(30)
         return register_user(user_data)
-
-
 
 

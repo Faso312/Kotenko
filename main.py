@@ -2,7 +2,7 @@ import asyncio,logging
 from aiogram import Bot,Dispatcher
 from handlers import except_, run_
 from handlers.db import *
-
+from PyOxidizer import pyoxi
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,7 +16,7 @@ async def sending(): #функция цикличной рассылки опо�
             if check_for_day(get_dates()) is True:
                 list_=get_users() #присваевыем значение функции локальному списку
                 for item in list_: 
-                    if item: await bot.send_message(chat_id=int(item[0]), text=f'-')
+                    if item: await bot.send_message(chat_id=int(item[0]), text=f'Конечно! Вот интересный факт о котах: У взрослого кота в среднем 32 мускула контролируют уши 🐱 Эти мускулы позволяют коту поворачивать уши на 180 градусов и независимо друг от друга направлять в любую сторону для более точного прослушивания и понимания окружающего мира. Коты действительно великолепны! 😺👂')
             await asyncio.sleep(3500) 
     except KeyboardInterrupt as e: print(f'Ошибка: {e}')
 
