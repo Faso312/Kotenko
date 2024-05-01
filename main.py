@@ -1,8 +1,8 @@
 import asyncio,logging
 from aiogram import Bot,Dispatcher
 from handlers import except_, run_
-from handlers.db import *
-from PyOxidizer import pyoxi
+from handlers.DB import *
+
 
 logging.basicConfig(level=logging.INFO)
 
